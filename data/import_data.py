@@ -1,5 +1,8 @@
+import csv
 import time
+
 import psycopg2
+
 
 while True:
     try:
@@ -17,16 +20,14 @@ while True:
         # If connection is not posible, waith 2 seconds and try it again
         time.sleep(2)
 
-
-import csv
-
 with open("data.csv", newline="") as csvfile:
     reader = csv.reader(csvfile, delimiter=",", quotechar="|")
     next(reader, None)  # skip the headers
 
     for row in reader:
         cursor.execute(
-            "INSERT INTO t_power (created_at, power, daily_yield, total_yield) VALUES (%s, %s, %s, %s)",
+            """INSERT INTO t_power (created_at, power, daily_yield,
+            total_yield) VALUES (%s, %s, %s, %s)""",
             (str(row[0]), row[1], row[2], row[3]),
         )
         conn.commit()
