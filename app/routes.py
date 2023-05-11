@@ -98,6 +98,46 @@ async def retrieve_total_yield():
     return {"data": tyield}
 
 
+@router.get("/t-yield/{year}")
+async def retrieve_total_yield_per_year(year: int):
+    cursor.execute(
+        """SELECT CREATED_AT::timestamp::date, TOTAL_YIELD FROM T_POWER WHERE
+        EXTRACT(HOUR FROM CREATED_AT) >= 23 AND EXTRACT(MINUTE FROM CREATED_AT)
+        >= 59 AND EXTRACT( YEAR FROM CREATED_AT) = %s ORDER BY created_at
+        ASC""", (year,))
+    tyield = cursor.fetchall()
+    if not tyield:
+        return {"message": "No Data within the given Date"}
+    return {"data": tyield}
+
+
+@router.get("/t-yield/{year}/{month}")
+async def retrieve_total_yield_per_month(year: int, month: int):
+    cursor.execute(
+        """SELECT CREATED_AT::timestamp::date, TOTAL_YIELD FROM T_POWER WHERE
+        EXTRACT(HOUR FROM CREATED_AT) >= 23 AND EXTRACT(MINUTE FROM CREATED_AT)
+        >= 59 AND EXTRACT( YEAR FROM CREATED_AT) = %s AND EXTRACT( MONTH FROM
+        CREATED_AT) = %s ORDER BY created_at ASC""", (year, month))
+    tyield = cursor.fetchall()
+    if not tyield:
+        return {"message": "No Data within the given Date"}
+    return {"data": tyield}
+
+
+@router.get("/t-yield/{year}/{month}/{day}")
+async def retrieve_total_yield_per_day(year: int, month: int, day: int):
+    cursor.execute(
+        """SELECT CREATED_AT::timestamp::date, TOTAL_YIELD FROM T_POWER WHERE
+        EXTRACT(HOUR FROM CREATED_AT) >= 23 AND EXTRACT(MINUTE FROM CREATED_AT)
+        >= 59 AND EXTRACT( YEAR FROM CREATED_AT) = %s AND EXTRACT( MONTH FROM
+        CREATED_AT) = %s AND EXTRACT( DAY FROM CREATED_AT) = %s ORDER BY
+        created_at ASC""", (year, month, day))
+    tyield = cursor.fetchall()
+    if not tyield:
+        return {"message": "No Data within the given Date"}
+    return {"data": tyield}
+
+
 @router.post("/data")
 async def add_data(data: SunnyWebData):
     cursor.execute(
